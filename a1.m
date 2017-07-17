@@ -86,7 +86,7 @@ value_IP= inputdlg(prompt,dlg_title,num_lines,def);
 str=get(handles.listbox1,'String');
 value_IP = [str;value_IP];
 set(handles.listbox1,'String',value_IP);
-
+   
 
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
