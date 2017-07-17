@@ -93,7 +93,7 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-guidata(listbox1,handles);%更新listbox1的用户数据
+guidata(listbox1,handles);%自动更新listbox1的用户数据
 
 % --- Executes on selection change in listbox1.
 function listbox1_Callback(hObject, eventdata, handles)
