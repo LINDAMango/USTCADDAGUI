@@ -489,7 +489,8 @@ function IP_Count_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of IP_Count as text
 %        str2double(get(hObject,'String')) returns contents of IP_Count as a double
-
+str = get(handles.listbox_ip,'String');
+len = length(str);
 
 % --- Executes during object creation, after setting all properties.
 function IP_Count_CreateFcn(hObject, eventdata, handles)

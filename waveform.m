@@ -107,7 +107,7 @@ classdef waveform
             wave = wave + obj.offset;
         end
         
-        function wave = generate_raw(obj)
+        function wave = generate_saw(obj)
             period = obj.sample_rate/obj.frequency;         %理想period是一个整数
             total_count = obj.best_fit_count(obj.frequency);
             x = 0:(total_count - 1);
