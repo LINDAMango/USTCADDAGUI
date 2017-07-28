@@ -22,7 +22,7 @@ function varargout = DACTEST(varargin)
 
 % Edit the above text to modify the response to help DACTEST
 
-% Last Modified by GUIDE v2.5 27-Jul-2017 15:03:17
+% Last Modified by GUIDE v2.5 28-Jul-2017 15:01:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -73,9 +73,76 @@ function varargout = DACTEST_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-% --- Executes on button press in add_handle.
-function add_handle_Callback(hObject, eventdata, handles)
-% hObject    handle to add_handle (see GCBO)
+% --- Executes on button press in DAAD_button.
+function DAAD_button_Callback(hObject, eventdata, handles)
+% hObject    handle to DAAD_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of DAAD_button
+set(gcf,'visible','off');
+ADCTEST('visible','on');
+
+
+% --- Executes on button press in IPCount_button.
+function IPCount_button_Callback(hObject, eventdata, handles)
+% hObject    handle to IPCount_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+str = get(handles.IP_listbox,'String');
+len = length(str);
+set(handles.IPCount_edit,'String',len);
+
+
+function IPCount_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to IPCount_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of IPCount_edit as text
+%        str2double(get(hObject,'String')) returns contents of IPCount_edit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function IPCount_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to IPCount_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in IP_listbox.
+function IP_listbox_Callback(hObject, eventdata, handles)
+% hObject    handle to IP_listbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns IP_listbox contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from IP_listbox
+
+
+% --- Executes during object creation, after setting all properties.
+function IP_listbox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to IP_listbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+% --- Executes on button press in Manual_button.
+function Manual_button_Callback(hObject, eventdata, handles)
+% hObject    handle to Manual_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 prompt = {'Input IP:'};
@@ -83,7 +150,7 @@ dlg_title = 'Input Dialog';
 num_lines = 1;
 def = {'10.0.1.1'};
 value_IP = inputdlg(prompt,dlg_title,num_lines,def);
-str = get(handles.listbox_ip,'String');
+str = get(handles.IP_listbox,'String');
 ip = value_IP;
 len = length(str);
 bExist = 0;
@@ -94,84 +161,87 @@ for k = 1:len
 end
 if(~bExist)
     new_str = [str;ip];
-    set(handles.listbox_ip,'String',new_str);
+    set(handles.IP_listbox,'String',new_str);
 end
 
 
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
+% --- Executes on button press in Scan_button.
+function Scan_button_Callback(hObject, eventdata, handles)
+% hObject    handle to Scan_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-guidata(handles.listbox_ip,handles);%自动更新listbox1的用户数据
-udpobj = udp('10.0.255.255','Localport',6789,'InputBufferSize',262144);
+set(handles.Scan_button,'Enable','off');
+guidata(handles.IP_listbox,handles);%自动更新listbox1的用户数据
+udpobj = udp('10.0.255.255','Localport',6789,'InputBufferSize',262144); 
 fopen(udpobj);
-pause(2);
+pause(5);
+iplist = get(handles.IP_listbox,'String');
 while(udpobj.BytesAvailable)
-    data = fread(udpobj,1024);
-    ip = udpobj.DatagramAddress;
-    str = get(handles.listbox_ip,'String');
-    len = length(str);
+    ip = {udpobj.DatagramAddress};
+    fread(udpobj,1024);
+    len = length(iplist);
     bExist = 0;
     for k=1:len
-        if(strcmp(str{k},ip))
-            bExist = 1; break;
+        if(strcmp(iplist{k},ip{1}))
+            bExist = 1;
+            break;
         end
     end
     if(~bExist)
-        new_str = [str;ip];
-        set(handles.listbox_ip,'String',new_str);
+        iplist1 = [iplist;ip];
+        iplist = iplist1;
     end
 end
+set(handles.IP_listbox,'String',iplist);
 fclose(udpobj);
+set(handles.Scan_button,'Enable','on');
 
 
-% --- Executes on selection change in listbox_ip.
-function listbox_ip_Callback(hObject, eventdata, handles)
-% hObject    handle to listbox_ip (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
+% --- Executes when entered data in editable cell(s) in Setpara_uitable.
+function Setpara_uitable_CellEditCallback(hObject, eventdata, handles)
+% hObject    handle to Setpara_uitable (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
+%	Indices: row and column indices of the cell(s) edited
+%	PreviousData: previous data for the cell(s) edited
+%	EditData: string(s) entered by the user
+%	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
+%	Error: error string when failed to convert EditData to appropriate value for Data
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns listbox_ip contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from listbox_ip
 
-
-
-% --- Executes on button press in save_button.
-function save_button_Callback(hObject, eventdata, handles)
-% hObject    handle to save_button (see GCBO)
+% --- Executes on button press in Save_button.
+function Save_button_Callback(hObject, eventdata, handles)
+% hObject    handle to Save_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [f p] = uiputfile('*.mat');
 filepath = [p,f];    %filepath为文件路径
-para = get(handles.uitable1,'Data');%para是数据矩阵
+para = get(handles.Setpara_uitable,'Data');%para是数据矩阵
 save(filepath,'para');
 
 
-
-
-% --- Executes on button press in save_button.
-function load_button_Callback(hObject, eventdata, handles)
-% hObject    handle to save_button (see GCBO)
+% --- Executes on button press in Save_button.
+function Load_button_Callback(hObject, eventdata, handles)
+% hObject    handle to Save_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [f p] = uigetfile('*.mat');
 filepath = [p,f];    %filepath为文件路径
 workspace = load(filepath,'para');
-set(handles.uitable1,'Data',workspace.para);
+set(handles.Setpara_uitable,'Data',workspace.para);
 
 
-% --- Executes on button press in config_button.
-function config_button_Callback(hObject, eventdata, handles)
-% hObject    handle to config_button (see GCBO)
+% --- Executes on button press in Config_button.
+function Config_button_Callback(hObject, eventdata, handles)
+% hObject    handle to Config_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-str = get(handles.listbox_ip,'string');
-value = get(handles.listbox_ip,'value');
-ip = str(value);
+str = get(handles.IP_listbox,'string');
+value = get(handles.IP_listbox,'value');
+ip = str{value};
 da = USTCDAC(ip,80);
 da.Open();
-data = get(handles.uitable1,'Data');
+data = get(handles.Setpara_uitable,'Data');
 da.SetLoop(floor(data{1,3}/65536),mod(data{1,3},65536),floor(data{1,4}/65536),mod(data{1,4},65536));
 da.SetTotalCount(data{2,4});
 da.SetDACStart(data{3,4});
@@ -188,7 +258,8 @@ for x = 1:4
     da.SetOffset(data{4+x,7},data{4+x,8});
     da.SetDefaultVolt(data{x+8,7},data{x+8,8})
 end
-    
+
+da.CheckStatus();
 da.Close();
 
 
@@ -197,53 +268,14 @@ function EEPROM_button_Callback(hObject, eventdata, handles)
 % hObject    handle to EEPROM_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-str = get(handles.listbox_ip,'string');
-value = get(handles.listbox_ip,'value');
-ip = str(value);
+str = get(handles.IP_listbox,'string');
+value = get(handles.IP_listbox,'value');
+ip = str{value};
 da = USTCDAC(ip,80);
 da.Open();
 da.ConfigEEPROM();
+da.CheckStatus();
 da.Close();
-
-
-% --- Executes during object creation, after setting all properties.
-function listbox_ip_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listbox_ip (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-
-% --- Executes on button press in togglebutton1.
-function togglebutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to togglebutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of togglebutton1
-set(gcf,'visible','off');
-ADCTEST('visible','on');
-
-
-% --- Executes when entered data in editable cell(s) in uitable1.
-function uitable1_CellEditCallback(hObject, eventdata, handles)
-% hObject    handle to uitable1 (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
-%	Indices: row and column indices of the cell(s) edited
-%	PreviousData: previous data for the cell(s) edited
-%	EditData: string(s) entered by the user
-%	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
-%	Error: error string when failed to convert EditData to appropriate value for Data
-% handles    structure with handles and user data (see GUIDATA)
-
-
 
 
 % --- Executes on button press in Init_button.
@@ -251,38 +283,71 @@ function Init_button_Callback(hObject, eventdata, handles)
 % hObject    handle to Init_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-str = get(handles.listbox_ip,'string');
-value = get(handles.listbox_ip,'value');
-ip = str(value);
+str = get(handles.IP_listbox,'string');
+value = get(handles.IP_listbox,'value');
+ip = str{value};
 da = USTCDAC(ip,80);
 da.Open();
 da.Init();
+da.CheckStatus();
 da.Close();
 
 
-% --- Executes on button press in radiobutton1.
-function radiobutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton1 (see GCBO)
+% --- Executes on button press in ContinuousMode_rbutton.
+function ContinuousMode_rbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to ContinuousMode_rbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.radiobutton1,'value',1);
-set(handles.radiobutton2,'value',0);
-% Hint: get(hObject,'Value') returns toggle state of radiobutton1
+set(handles.ContinuousMode_rbutton,'value',1);
+set(handles.TriggerMode_rbutton,'value',0);
+% Hint: get(hObject,'Value') returns toggle state of ContinuousMode_rbutton
 
 
-% --- Executes on selection change in wave_seclect.
-function wave_seclect_Callback(hObject, eventdata, handles)
-% hObject    handle to wave_seclect (see GCBO)
+% --- Executes on button press in TriggerMode_rbutton.
+function TriggerMode_rbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to TriggerMode_rbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.ContinuousMode_rbutton,'value',0);
+set(handles.TriggerMode_rbutton,'value',1);
+% Hint: get(hObject,'Value') returns toggle state of TriggerMode_rbutton
+
+
+function Delay_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to Delay_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns wave_seclect contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from wave_seclect
+% Hints: get(hObject,'String') returns contents of Delay_edit as text
+%        str2double(get(hObject,'String')) returns contents of Delay_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function wave_seclect_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to wave_seclect (see GCBO)
+function Delay_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Delay_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in WaveSeclect_popu.
+function WaveSeclect_popu_Callback(hObject, eventdata, handles)
+% hObject    handle to WaveSeclect_popu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns WaveSeclect_popu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from WaveSeclect_popu
+
+
+% --- Executes during object creation, after setting all properties.
+function WaveSeclect_popu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to WaveSeclect_popu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -293,28 +358,18 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in radiobutton2.
-function radiobutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-set(handles.radiobutton1,'value',0);
-set(handles.radiobutton2,'value',1);
-% Hint: get(hObject,'Value') returns toggle state of radiobutton2
-
-
-function frequency_Callback(hObject, eventdata, handles)
-% hObject    handle to frequency (see GCBO)
+function Frequency_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to Frequency_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of frequency as text
-%        str2double(get(hObject,'String')) returns contents of frequency as a double
+% Hints: get(hObject,'String') returns contents of Frequency_edit as text
+%        str2double(get(hObject,'String')) returns contents of Frequency_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function frequency_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to frequency (see GCBO)
+function Frequency_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Frequency_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -325,19 +380,18 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function amplitude_Callback(hObject, eventdata, handles)
-% hObject    handle to amplitude (see GCBO)
+function Amplitude_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to Amplitude_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of amplitude as text
-%        str2double(get(hObject,'String')) returns contents of amplitude as a double
+% Hints: get(hObject,'String') returns contents of Amplitude_edit as text
+%        str2double(get(hObject,'String')) returns contents of Amplitude_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function amplitude_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to amplitude (see GCBO)
+function Amplitude_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Amplitude_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -348,19 +402,18 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function offset_Callback(hObject, eventdata, handles)
-% hObject    handle to offset (see GCBO)
+function Offset_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to Offset_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of offset as text
-%        str2double(get(hObject,'String')) returns contents of offset as a double
+% Hints: get(hObject,'String') returns contents of Offset_edit as text
+%        str2double(get(hObject,'String')) returns contents of Offset_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function offset_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to offset (see GCBO)
+function Offset_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Offset_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -371,19 +424,18 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function wave_length_Callback(hObject, eventdata, handles)
-% hObject    handle to wave_length (see GCBO)
+function WaveLength_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to WaveLength_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of wave_length as text
-%        str2double(get(hObject,'String')) returns contents of wave_length as a double
+% Hints: get(hObject,'String') returns contents of WaveLength_edit as text
+%        str2double(get(hObject,'String')) returns contents of WaveLength_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function wave_length_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to wave_length (see GCBO)
+function WaveLength_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to WaveLength_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -394,22 +446,23 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in send_button.
-function send_button_Callback(hObject, eventdata, handles)
-% hObject    handle to send_button (see GCBO)
+% --- Executes on button press in Send_button.
+function Send_button_Callback(hObject, eventdata, handles)
+% hObject    handle to Send_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if get(handles.radiobutton1, 'value')
+if get(handles.ContinuousMode_rbutton, 'value')
     opinion = 1;
-elseif get(handles.radiobutton2, 'value');
+elseif get(handles.TriggerMode_rbutton, 'value');
     opinion = 2;
 end
-wavemode = get(handles.wave_seclect, 'value');
-frequency = str2num(get(handles.frequency,'String'));
-amplitude = str2num(get(handles.amplitude, 'String'));%amplitude为峰峰值
-offset = str2num(get(handles.offset, 'String'));
-wavelength = str2num(get(handles.wave_length, 'String'));%采样点数为2000
-channel = get(handles.CHANNEL,'value');
+
+wavemode = get(handles.WaveSeclect_popu, 'value');
+frequency = str2num(get(handles.Frequency_edit,'String'));
+amplitude = str2num(get(handles.Amplitude_edit, 'String'));%amplitude为峰峰值
+offset = str2num(get(handles.Offset_edit, 'String'));
+wavelength = str2num(get(handles.WaveLength_edit, 'String'));%采样点数为2000
+channel = get(handles.CHANNEL_popu,'value');
 if opinion == 1
     waveobj = waveform();
     waveobj.amplitude = amplitude;
@@ -428,6 +481,9 @@ if opinion == 1
             wave = xlsread('data.xlsx','A:A');
     end
     seq = waveobj.generate_seq(length(wave));
+    str = get(handles.IP_listbox,'String');
+    value = get(handles.IP_listbox,'value');
+    ip = str{value};
     da = USTCDAC(ip,80);
     da.Open();
     da.StartStop(2^(3+channel));
@@ -451,7 +507,7 @@ else
             remain = rem(wavelength,length(pattern));
             wave(1+k*length(pattern):wavelength)=pattern(1:remain);
         case 3
-            wave = 0.5*amplitude*sin((1:wavelength)/(2e9/frequency)*2*pi)+offset;
+            wave = 0.5*amplitude*sin((1:wavelength)/(length(pattern))*2*pi)+offset;
         case 4
             wave = 0;
         otherwise
@@ -459,64 +515,21 @@ else
     end
 end
 
-function delay_Callback(hObject, eventdata, handles)
-% hObject    handle to delay (see GCBO)
+
+
+% --- Executes on selection change in CHANNEL_popu.
+function CHANNEL_popu_Callback(hObject, eventdata, handles)
+% hObject    handle to CHANNEL_popu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of delay as text
-%        str2double(get(hObject,'String')) returns contents of delay as a double
+% Hints: contents = cellstr(get(hObject,'String')) returns CHANNEL_popu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from CHANNEL_popu
 
 
 % --- Executes during object creation, after setting all properties.
-function delay_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to delay (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function IP_Count_Callback(hObject, eventdata, handles)
-% hObject    handle to IP_Count (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of IP_Count as text
-%        str2double(get(hObject,'String')) returns contents of IP_Count as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function IP_Count_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to IP_Count (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in CHANNEL.
-function CHANNEL_Callback(hObject, eventdata, handles)
-% hObject    handle to CHANNEL (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns CHANNEL contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from CHANNEL
-
-
-% --- Executes during object creation, after setting all properties.
-function CHANNEL_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to CHANNEL (see GCBO)
+function CHANNEL_popu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to CHANNEL_popu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
