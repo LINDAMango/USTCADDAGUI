@@ -1,0 +1,8 @@
+01-Aug-2017 09:11:41 USTCDAC:Open:Unnamed Error code:10060 --> Windows API failed: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+01-Aug-2017 09:12:02 USTCDAC:Open:Unnamed Error code:10060 --> Windows API failed: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+01-Aug-2017 09:12:23 USTCDAC:Open:Unnamed Error code:10060 --> Windows API failed: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+02-Aug-2017 09:48:06 USTCDAC:CheckStatus:Unnamed Error code:-1543503871 --> USTCDACDRIVER API failed: The task(s) timeout.
+02-Aug-2017 09:48:08 USTCDAC:GetReturn:Unnamed Error code:-1543503871 --> USTCDACDRIVER API failed: The task(s) timeout.
+02-Aug-2017 09:48:23 USTCDAC:CheckStatus:Unnamed Error code:-1543503871 --> USTCDACDRIVER API failed: The task(s) timeout.
+02-Aug-2017 10:06:36 USTCDAC:CheckStatus:Unnamed Error code:-1543503871 --> USTCDACDRIVER API failed: The task(s) timeout.
+02-Aug-2017 10:06:52 USTCDAC:GetReturn:Unnamed Error code:-1543503871 --> USTCDACDRIVER API failed: The task(s) timeout.
