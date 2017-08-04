@@ -22,7 +22,7 @@ function varargout = DACTEST(varargin)
 
 % Edit the above text to modify the response to help DACTEST
 
-% Last Modified by GUIDE v2.5 31-Jul-2017 11:28:11
+% Last Modified by GUIDE v2.5 04-Aug-2017 09:26:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -81,7 +81,7 @@ function DAAD_button_Callback(~, ~, ~)
 
 % Hint: get(hObject,'Value') returns toggle state of DAAD_button
 set(gcf,'visible','off');
-ADCTEST('visible','on');                                          % 实现DACTEST页面与ADCTEST页面的转换
+ADCTEST('visible','on');                    % 实现DACTEST页面与ADCTEST页面的转换
 
 
 % --- Executes on button press in IPCount_button.
@@ -91,7 +91,7 @@ function IPCount_button_Callback(~, ~, handles)
 % handles    structure with handles and user data (see GUIDATA)
 str = get(handles.IP_listbox,'String');
 len = length(str);
-set(handles.IPCount_edit,'String',len);                           % 统计IP_listbox中的ip的数量
+set(handles.IPCount_edit,'String',len);     % 统计IP_listbox中的ip的数量
 
 
 function IPCount_edit_Callback(~, ~, ~)
@@ -117,17 +117,24 @@ end
 
 
 % --- Executes on selection change in IP_listbox.
-function IP_listbox_Callback(~, ~, ~)
+function IP_listbox_Callback(hObject, eventdata, handles)
 % hObject    handle to IP_listbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns IP_listbox contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from IP_listbox
-
+str = get(handles.IP_listbox,'string');
+value = get(handles.IP_listbox,'value');
+ip = str{value};
+path = 'C:\Users\Administrator\Desktop\USTCADDAGUI\config\';
+ip_str = char(strcat(path, strcat(cellstr(ip),'.mat')));
+workspace = load(ip_str);
+set(handles.Setpara_uitable,'Data',workspace.data);
+ 
 
 % --- Executes during object creation, after setting all properties.
-function IP_listbox_CreateFcn(hObject, ~, ~)
+function IP_listbox_CreateFcn(hObject,eventdata, handles)
 % hObject    handle to IP_listbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -141,14 +148,14 @@ end
 
 
 % --- Executes on button press in Manual_button.
-function Manual_button_Callback(~, ~, handles)
+function Manual_button_Callback(~, eventdata, handles)
 % hObject    handle to Manual_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 prompt = {'Input IP:'};
 dlg_title = 'Input Dialog';
 num_lines = 1;
-def = {'10.0.1.1'};                                               % 弹出一个菜单，手动输入ip，默认值为10.0.1.1
+def = {'10.0.1.1'};                         % 弹出一个菜单，手动输入ip，默认值为10.0.1.1
 value_IP = inputdlg(prompt,dlg_title,num_lines,def);
 str = get(handles.IP_listbox,'String');
 ip = value_IP;
@@ -156,25 +163,35 @@ len = length(str);
 bExist = 0;
 for k = 1:len
     if(strcmp(str{k},ip))
-        bExist = 1; break;
+        bExist = 1;
+        break;
     end
 end
 if(~bExist)
     new_str = [str;ip];
     set(handles.IP_listbox,'String',new_str);
-end                                                               %若当前输入的ip列表中已经存在则不进行操作，若不存在则将ip写入列表中
+end                                         %若当前输入的ip列表中已经存在则不进行操作，若不存在则将ip写入列表中
+ip = value_IP;
+path = 'C:\Users\Administrator\Desktop\USTCADDAGUI\config\';
+ip_str = char(strcat(path, strcat(cellstr(ip),'.mat')));
+if(~exist(ip_str,'file'))
+    msgbox('请配置参数！','警告','warn');           %若子文件夹（config）中没有名为ip.mat的文件，则警告用户配置参数并保存。
+    data = get(handles.Setpara_uitable,'Data');
+    save('temp','data'); 
+    movefile('temp.mat',ip_str);
+end
 
 
 % --- Executes on button press in Scan_button.
-function Scan_button_Callback(~, ~, handles)
+function Scan_button_Callback(~, eventdata, handles)
 % hObject    handle to Scan_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.Scan_button,'Enable','off');
-guidata(handles.IP_listbox,handles);                              %自动更新listbox1的用户数据
+guidata(handles.IP_listbox,handles);        %自动更新listbox1的用户数据
 udpobj = udp('10.0.255.255','Localport',6789,'InputBufferSize',262144); 
 fopen(udpobj);
-pause(5);
+pause(2);
 iplist = get(handles.IP_listbox,'String');
 while(udpobj.BytesAvailable)
     ip = {udpobj.DatagramAddress};
@@ -190,6 +207,13 @@ while(udpobj.BytesAvailable)
     if(~bExist)
         iplist1 = [iplist;ip];
         iplist = iplist1;
+        path = 'C:\Users\Administrator\Desktop\USTCADDAGUI\config\';
+        ip_str = char(strcat(path, strcat(cellstr(ip),'.mat')));
+        if(~exist(ip_str,'file'))
+            data = get(handles.Setpara_uitable,'Data');
+            save('temp','data'); 
+            movefile('temp.mat',ip_str);
+        end
     end
 end
 set(handles.IP_listbox,'String',iplist);
@@ -198,7 +222,7 @@ set(handles.Scan_button,'Enable','on');
 
 
 % --- Executes when entered data in editable cell(s) in Setpara_uitable.
-function Setpara_uitable_CellEditCallback(~, ~, ~)
+function Setpara_uitable_CellEditCallback(hObject, eventdata, handles)
 % hObject    handle to Setpara_uitable (see GCBO)
 % eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
 %	Indices: row and column indices of the cell(s) edited
@@ -210,29 +234,32 @@ function Setpara_uitable_CellEditCallback(~, ~, ~)
 
 
 % --- Executes on button press in Save_button.
-function Save_button_Callback(~, ~, handles)
+function Save_button_Callback(~, eventdata, handles)
 % hObject    handle to Save_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[f,p] = uiputfile('*.mat');
-filepath = [p,f];    %filepath为文件路径
-para = get(handles.Setpara_uitable,'Data');%para是数据矩阵
-save(filepath,'para');                                            % 将Setpara_uitable中所有的数据提取并存储到USTCADDAGUI文件夹下的config文件夹中
+str = get(handles.IP_listbox,'string');
+value = get(handles.IP_listbox,'value');
+ip = str{value};
+dir = 'C:\Users\Administrator\Desktop\USTCADDAGUI\config\';
+savepath = char(strcat(dir,strcat(cellstr(ip),'.mat')));
+data = get(handles.Setpara_uitable,'Data');
+save(savepath,'data');
 
 
 % --- Executes on button press in Save_button.
-function Load_button_Callback(~, ~, handles)
+function Load_button_Callback(~,eventdata, handles)
 % hObject    handle to Save_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [f,p] = uigetfile('*.mat');
 filepath = [p,f];    %filepath为文件路径
 workspace = load(filepath,'para');
-set(handles.Setpara_uitable,'Data',workspace.para);               % 将USTCADDAGUI文件夹下的config文件夹中的数据加载到Setpara_uitable中
+set(handles.Setpara_uitable,'Data',workspace.para);% 将USTCADDAGUI文件夹下的config文件夹中的数据加载到Setpara_uitable中
 
 
 % --- Executes on button press in Config_button.
-function Config_button_Callback(~, ~, handles)
+function Config_button_Callback(~,eventdata, handles)
 % hObject    handle to Config_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -258,12 +285,12 @@ for x = 1:4
     da.SetOffset(data{4+x,7},data{4+x,8});
     da.SetDefaultVolt(data{x+8,7},data{x+8,8})
 end
-da.CheckStatus();                                                 %检查上方指令是否执行完毕
-da.Close();                                                       %将Setpara_uitable中的数据写到对应ip地址的DAC板上
+da.CheckStatus();                           %检查上方指令是否执行完毕
+da.Close();                                 %将Setpara_uitable中的数据写到对应ip地址的DAC板上
 
 
 % --- Executes on button press in EEPROM_button.
-function EEPROM_button_Callback(~, ~, handles)
+function EEPROM_button_Callback(~, eventdata, handles)
 % hObject    handle to EEPROM_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -274,7 +301,7 @@ da = USTCDAC(ip,80);
 da.Open();
 da.ConfigEEPROM();
 da.CheckStatus();
-da.Close();                                                       % 给DAC板指令，将数据写入EEPROM
+da.Close();                                 % 给DAC板指令，将数据写入EEPROM
 
 
 % --- Executes on button press in Init_button.
@@ -289,7 +316,7 @@ da = USTCDAC(ip,80);
 da.Open();
 da.Init();
 da.CheckStatus();
-da.Close();                                                       % 初始化DAC
+da.Close();                                 % 初始化DAC
 
 
 % --- Executes on button press in ContinuousMode_rbutton.
@@ -479,7 +506,7 @@ elseif get(handles.TriggerMode_rbutton, 'value');
     opinion = 2;
 end
 wavemode = get(handles.WaveSeclect_popu, 'value');                % 选择波形模式
-delay = str2num(get(handles.Delay_edit,'String'));
+delay = str2num(get(handles.Delay_edit,'String'));                % 延时
 frequency = str2num(get(handles.Frequency_edit,'String'));        % 频率
 amplitude = str2num(get(handles.Amplitude_edit, 'String'));       % amplitude为峰峰值
 offset = str2num(get(handles.Offset_edit, 'String'));             % 偏置
@@ -545,14 +572,15 @@ else                                                              % 触发模式
         otherwise
             wave = xlsread('data.xlsx','A:A');
     end
-    seq = zeros(1,wavelength);
-    count = floor(wavelength/8);
-    for k=1:floor((wavelength/8))
-        seq(4*k-3) = 0;
-        seq(4*k-2) = 0;
-        seq(4*k-1) = 0;
-        seq(4*k) = count;
-    end
+%     seq = zeros(1,wavelength);
+%     count = wavelength;
+%     for k=1:floor((wavelength/8))
+%         seq(4*k-3) = 0;
+%         seq(4*k-2) = 0;
+%         seq(4*k-1) = 0;
+%         seq(4*k) = count;
+%     end
+    seq = waveobj.generate_trig_seq(wavelength,delay);
     str = get(handles.IP_listbox,'String');
     value = get(handles.IP_listbox,'value');
     ip = str{value};
@@ -570,3 +598,10 @@ else                                                              % 触发模式
     da.CheckStatus();                                             %检查上方写函数是否执行完毕
     da.Close();
 end
+
+
+% --- Executes during object creation, after setting all properties.
+function Setpara_uitable_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Setpara_uitable (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called

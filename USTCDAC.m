@@ -317,7 +317,7 @@ classdef USTCDAC < handle
             obj.Block();
         end
         function SetBoardcast(obj,isBoardcast,period)
-            period = floor(period*5);
+            period = floor(period);
             period(period > 255) = 255;
             ErrorCode = calllib(obj.driver,'WriteInstruction',obj.id,hex2dec('00001305'),isBoardcast,period);
             obj.DispError(['USTCDAC:SetBoardcast:',obj.name],ErrorCode);
