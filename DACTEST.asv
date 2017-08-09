@@ -1,8 +1,8 @@
 %   FileName:DACTEST.m
 % 	Author:LiNa
-% 	E-mail:18712753997@163.com
-% 	All right reserved @ LiNa.
-% 	Modified: 2017.8.4
+% 	E-mail:18712753997@mail.ustc.edu.cn
+% 	All right reserved @ GuoCheng.
+% 	Modified: 2017.7.1
 %   Description:The class of DAC
 
 function varargout = DACTEST(varargin)

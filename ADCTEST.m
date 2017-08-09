@@ -22,7 +22,7 @@ function varargout = ADCTEST(varargin)
 
 % Edit the above text to modify the response to help ADCTEST
 
-% Last Modified by GUIDE v2.5 31-Jul-2017 16:39:05
+% Last Modified by GUIDE v2.5 08-Aug-2017 17:08:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -89,6 +89,10 @@ function Sent_button_Callback(hObject, eventdata, handles)
 % hObject    handle to Sent_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+da = USTCADC();
+da.Open();                                       % Æô¶¯ÍøÂç¼àÌý
+da.ForceTrig();
+da.Close();                                      % ¹Ø±ÕÍøÂç¼àÌý
 
 
 % --- Executes on button press in WAVE_button.
@@ -96,6 +100,8 @@ function WAVE_button_Callback(hObject, eventdata, handles)
 % hObject    handle to WAVE_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+set(handles.WAVE_button,'Enable','off');
+set(handles.DEMO_button,'Enable','on');
 
 
 % --- Executes on button press in DEMO_button.
@@ -103,62 +109,101 @@ function DEMO_button_Callback(hObject, eventdata, handles)
 % hObject    handle to DEMO_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+set(handles.DEMO_button,'Enable','off');
+set(handles.WAVE_button,'Enable','on');
 
 
-% --- Executes on button press in TRIG_en_button.
-function TRIG_en_button_Callback(hObject, eventdata, handles)
-% hObject    handle to TRIG_en_button (see GCBO)
+% --- Executes on button press in TrigCount_button.
+function TrigCount_button_Callback(hObject, eventdata, handles)
+% hObject    handle to TrigCount_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+da = USTCADC();
+da.Open();
+da.SetTrigCount(TrigCount,2000);
+set(handles.TrigCount_edit,'Data');
+da.Close();
+
+
+function TrigCount_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to TrigCount_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Hints: get(hObject,'String') returns contents of TrigCount_edit as text
+%        str2double(get(hObject,'String')) returns contents of TrigCount_edit as a double
 
-% --- Executes on button press in Assign_button.
-function Assign_button_Callback(hObject, eventdata, handles)
-% hObject    handle to Assign_button (see GCBO)
+
+% --- Executes during object creation, after setting all properties.
+function TrigCount_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to TrigCount_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in MacAddress_button.
+function MacAddress_button_Callback(hObject, eventdata, handles)
+% hObject    handle to MacAddress_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+da = USTCADC();
+da.Open();
+da.SetMacAddr();
+da.Close();
+
+
+function MacAddress_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to MacAddress_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of MacAddress_edit as text
+%        str2double(get(hObject,'String')) returns contents of MacAddress_edit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function MacAddress_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to MacAddress_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
 
 
 % --- Executes on button press in SampleDepth_button.
 function SampleDepth_button_Callback(hObject, eventdata, handles)
-% hObject    handle to SampleDepth_button (see GCBO)
+% hObject    handle t    o SampleDepth_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+da = USTCADC();
+da.Open();
+da.SetSampleDepth();
+da.Close();
+
+
+function SampleDepth_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to SampleDepth_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-
-% --- Executes on button press in DemoWinln_button.
-function DemoWinln_button_Callback(hObject, eventdata, handles)
-% hObject    handle to DemoWinln_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in DemoWinstart_button.
-function DemoWinstart_button_Callback(hObject, eventdata, handles)
-% hObject    handle to DemoWinstart_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in GainAdjust_button.
-function GainAdjust_button_Callback(hObject, eventdata, handles)
-% hObject    handle to GainAdjust_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-function TRIG_en_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to TRIG_en_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of TRIG_en_edit as text
-%        str2double(get(hObject,'String')) returns contents of TRIG_en_edit as a double
+% Hints: get(hObject,'String') returns contents of SampleDepth_edit as text
+%        str2double(get(hObject,'String')) returns contents of SampleDepth_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function TRIG_en_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to TRIG_en_edit (see GCBO)
+function SampleDepth_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to SampleDepth_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -169,19 +214,29 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
+% --- Executes on button press in WindowLength_button.
+function WindowLength_button_Callback(hObject, eventdata, handles)
+% hObject    handle to WindowLength_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+da = USTCADC();
+da.Open();
+da.SetWindowLength();
+da.Close();
 
-function Assign_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to Assign_edit (see GCBO)
+
+function WindowLength_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to WindowLength_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of Assign_edit as text
-%        str2double(get(hObject,'String')) returns contents of Assign_edit as a double
+% Hints: get(hObject,'String') returns contents of WindowLength_edit as text
+%        str2double(get(hObject,'String')) returns contents of WindowLength_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function Assign_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to Assign_edit (see GCBO)
+function WindowLength_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to WindowLength_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -192,19 +247,29 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
+% --- Executes on button press in WindowStart_button.
+function WindowStart_button_Callback(hObject, eventdata, handles)
+% hObject    handle to WindowStart_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+da = USTCADC();
+da.Open();
+da.SetWindowStart();
+da.Close();
 
-function SD_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to SD_edit (see GCBO)
+
+function WindowStart_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to WindowStart_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of SD_edit as text
-%        str2double(get(hObject,'String')) returns contents of SD_edit as a double
+% Hints: get(hObject,'String') returns contents of WindowStart_edit as text
+%        str2double(get(hObject,'String')) returns contents of WindowStart_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function SD_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to SD_edit (see GCBO)
+function WindowStart_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to WindowStart_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -215,19 +280,29 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
+% --- Executes on button press in Gain_button.
+function Gain_button_Callback(hObject, eventdata, handles)
+% hObject    handle to Gain_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+da = USTCADC();
+da.Open();
+da.SetGain();
+da.Close();
 
-function demoWinln_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to demoWinln_edit (see GCBO)
+
+function Gain_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to Gain_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of demoWinln_edit as text
-%        str2double(get(hObject,'String')) returns contents of demoWinln_edit as a double
+% Hints: get(hObject,'String') returns contents of Gain_edit as text
+%        str2double(get(hObject,'String')) returns contents of Gain_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function demoWinln_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to demoWinln_edit (see GCBO)
+function Gain_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Gain_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -236,53 +311,6 @@ function demoWinln_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-function demoWinstart_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to demoWinstart_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of demoWinstart_edit as text
-%        str2double(get(hObject,'String')) returns contents of demoWinstart_edit as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function demoWinstart_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to demoWinstart_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function GainAdjust_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to GainAdjust_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of GainAdjust_edit as text
-%        str2double(get(hObject,'String')) returns contents of GainAdjust_edit as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function GainAdjust_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to GainAdjust_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 
 function edit7_Callback(hObject, eventdata, handles)
@@ -374,3 +402,34 @@ function checkbox1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox1
+
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over Sent_button.
+function Sent_button_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to Sent_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit10_Callback(hObject, eventdata, handles)
+% hObject    handle to edit10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit10 as text
+%        str2double(get(hObject,'String')) returns contents of edit10 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit10_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

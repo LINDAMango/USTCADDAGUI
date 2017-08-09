@@ -104,7 +104,7 @@ classdef USTCADC < handle
             obj.DispError('USTCADC:SetSampleDepth',ErrorCode);
         end
         function SetTrigCount(obj,count)
-            obj.trig_count = count;
+            obj.trig_count = count;  
             data = [0,19,count/256,mod(count,256)];
             pdata = libpointer('uint8Ptr', data);
             [ErrorCode,~] = calllib(obj.driver,'SendData',int32(4),pdata);
